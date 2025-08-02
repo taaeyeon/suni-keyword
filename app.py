@@ -47,39 +47,41 @@ def extract_keywords(texts):
 
 # ✅ 시각화 함수
 def draw_charts(title, freq_dict):
+    # 상위 키워드 제한
+    bar_data = dict(list(freq_dict.items())[:20])   # 막대그래프: 상위 20개
+    pie_data = dict(list(freq_dict.items())[:10])   # 파이차트: 상위 10개
+    wc_data = freq_dict                             # 워드클라우드는 전체
+
     col1, col2, col3 = st.columns(3)
+    font_prop = fm.FontProperties(fname=FONT_PATH)
 
-    # 한글 폰트 객체
-    font_path = FONT_PATH
-    font_prop = fm.FontProperties(fname=font_path)
-
-    # 막대그래프
+    # 📊 막대그래프
     with col1:
         st.markdown(f"**📊 {title} - 막대그래프**")
-        fig, ax = plt.subplots(figsize=(6, 3))  # ✅ 넓게 조정
-        ax.bar(freq_dict.keys(), freq_dict.values(), color='skyblue')
-        ax.set_xticks(range(len(freq_dict)))
-        ax.set_xticklabels(freq_dict.keys(), rotation=60, fontsize=6, fontproperties=font_prop)
-        ax.set_yticklabels(ax.get_yticks(), fontsize=8, fontproperties=font_prop)
+        fig, ax = plt.subplots(figsize=(6, 3))
+        ax.bar(bar_data.keys(), bar_data.values(), color='skyblue')
+        ax.set_xticks(range(len(bar_data)))
+        ax.set_xticklabels(bar_data.keys(), rotation=60, fontsize=5, fontproperties=font_prop)
+        ax.set_yticklabels(ax.get_yticks(), fontsize=7, fontproperties=font_prop)
         st.pyplot(fig)
 
-    # 파이차트
+    # 🧁 파이차트 (라벨 제거 → 범례 사용)
     with col2:
         st.markdown(f"**🧁 {title} - 파이차트**")
-        fig, ax = plt.subplots(figsize=(5, 3))  # ✅ 작고 넓게
+        fig, ax = plt.subplots(figsize=(5, 3))
         wedges, texts, autotexts = ax.pie(
-            freq_dict.values(), labels=freq_dict.keys(),
-            autopct='%1.1f%%', startangle=140, textprops={'fontsize': 7}
+            pie_data.values(), labels=None, autopct='%1.1f%%', startangle=140,
+            textprops={'fontsize': 7}
         )
-        for t in texts + autotexts:
-            t.set_fontproperties(font_prop)
+        ax.legend(wedges, pie_data.keys(), loc='center left',
+                  bbox_to_anchor=(1, 0.5), prop=font_prop, fontsize=6)
         st.pyplot(fig)
 
-    # 워드클라우드
+    # ☁️ 워드클라우드 (전체 키워드 시각화)
     with col3:
         st.markdown(f"**☁️ {title} - 워드클라우드**")
-        wc = WordCloud(font_path=font_path, background_color='white', width=300, height=200)
-        wc.generate_from_frequencies(freq_dict)
+        wc = WordCloud(font_path=FONT_PATH, background_color='white', width=300, height=200)
+        wc.generate_from_frequencies(wc_data)
         fig, ax = plt.subplots(figsize=(4, 3))
         ax.imshow(wc, interpolation='bilinear')
         ax.axis("off")
