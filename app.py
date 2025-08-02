@@ -56,19 +56,20 @@ def draw_charts(title, freq_dict):
     # 막대그래프
     with col1:
         st.markdown(f"**📊 {title} - 막대그래프**")
-        fig, ax = plt.subplots(figsize=(4, 3))
+        fig, ax = plt.subplots(figsize=(6, 3))  # ✅ 넓게 조정
         ax.bar(freq_dict.keys(), freq_dict.values(), color='skyblue')
-        ax.set_xticklabels(freq_dict.keys(), rotation=45, fontsize=8, fontproperties=font_prop)
+        ax.set_xticks(range(len(freq_dict)))
+        ax.set_xticklabels(freq_dict.keys(), rotation=60, fontsize=6, fontproperties=font_prop)
         ax.set_yticklabels(ax.get_yticks(), fontsize=8, fontproperties=font_prop)
         st.pyplot(fig)
 
     # 파이차트
     with col2:
         st.markdown(f"**🧁 {title} - 파이차트**")
-        fig, ax = plt.subplots(figsize=(4, 3))
+        fig, ax = plt.subplots(figsize=(5, 3))  # ✅ 작고 넓게
         wedges, texts, autotexts = ax.pie(
             freq_dict.values(), labels=freq_dict.keys(),
-            autopct='%1.1f%%', startangle=140, textprops={'fontsize': 8}
+            autopct='%1.1f%%', startangle=140, textprops={'fontsize': 7}
         )
         for t in texts + autotexts:
             t.set_fontproperties(font_prop)
