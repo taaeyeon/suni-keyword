@@ -49,28 +49,37 @@ def extract_keywords(texts):
 def draw_charts(title, freq_dict):
     col1, col2, col3 = st.columns(3)
 
+    # 한글 폰트 객체
+    font_path = FONT_PATH
+    font_prop = fm.FontProperties(fname=font_path)
+
     # 막대그래프
     with col1:
         st.markdown(f"**📊 {title} - 막대그래프**")
-        fig, ax = plt.subplots(figsize=(4, 3))  # 👈 작게 조정
+        fig, ax = plt.subplots(figsize=(4, 3))
         ax.bar(freq_dict.keys(), freq_dict.values(), color='skyblue')
-        plt.xticks(rotation=45, fontsize=8)
-        plt.yticks(fontsize=8)
+        ax.set_xticklabels(freq_dict.keys(), rotation=45, fontsize=8, fontproperties=font_prop)
+        ax.set_yticklabels(ax.get_yticks(), fontsize=8, fontproperties=font_prop)
         st.pyplot(fig)
 
     # 파이차트
     with col2:
         st.markdown(f"**🧁 {title} - 파이차트**")
-        fig, ax = plt.subplots(figsize=(4, 3))  # 👈 작게 조정
-        ax.pie(freq_dict.values(), labels=freq_dict.keys(), autopct='%1.1f%%', startangle=140, textprops={'fontsize': 8})
+        fig, ax = plt.subplots(figsize=(4, 3))
+        wedges, texts, autotexts = ax.pie(
+            freq_dict.values(), labels=freq_dict.keys(),
+            autopct='%1.1f%%', startangle=140, textprops={'fontsize': 8}
+        )
+        for t in texts + autotexts:
+            t.set_fontproperties(font_prop)
         st.pyplot(fig)
 
     # 워드클라우드
     with col3:
         st.markdown(f"**☁️ {title} - 워드클라우드**")
-        wc = WordCloud(font_path=FONT_PATH, background_color='white', width=300, height=200)  # 👈 작게 조정
+        wc = WordCloud(font_path=font_path, background_color='white', width=300, height=200)
         wc.generate_from_frequencies(freq_dict)
-        fig, ax = plt.subplots(figsize=(4, 3))  # 👈 작게 조정
+        fig, ax = plt.subplots(figsize=(4, 3))
         ax.imshow(wc, interpolation='bilinear')
         ax.axis("off")
         st.pyplot(fig)
